@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>የሶፍትዌር ኢንጂነሪንግ ፖርትፎሊዮ</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-2: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --border: rgba(148, 163, 184, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    .nav {
+      max-width: 1050px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .brand { font-weight: 700; font-size: 1.15rem; color: var(--accent); }
+
+    .nav-links { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+
+    .nav-links a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .btn-primary { background: var(--accent); color: #0f172a; }
+    .btn-primary:hover { background: var(--accent-hover); color: #fff; }
+    .btn-ghost { background: var(--surface-2); color: var(--text); }
+    .btn-ghost:hover { opacity: 0.9; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-success { background: var(--success); color: #0f172a; }
+
+    .container {
+      max-width: 1050px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    .hero {
+      padding: 2.5rem 0 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero h1 { font-size: 2rem; margin-bottom: 0.75rem; }
+    .hero p { color: var(--muted); max-width: 720px; margin-bottom: 1.25rem; }
+
+    .filter-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1.5rem 0 1.25rem;
+    }
+
+    .filter-btn {
+      background: var(--surface);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .filter-btn.active {
+      background: var(--accent);
+      color: #0f172a;
+      border-color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--accent);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .card h3 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+    .card p { color: var(--muted); font-size: 0.92rem; }
+
+    .tech-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+    }
+
+    .tech-tag {
+      font-size: 0.75rem;
+      background: var(--surface-2);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      color: #e2e8f0;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .card-actions a {
+      font-size: 0.85rem;
+      color: var(--accent);
+      text-decoration: none;
+      margin-right: auto;
+    }
+
+    section { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
+    section h2 { font-size: 1.45rem; margin-bottom: 1rem; }
+
+    form {
+      display: grid;
+      gap: 0.9rem;
+      max-width: 600px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    textarea { min-height: 110px; resize: vertical; }
+
+    .admin-panel {
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+      display: none;
+    }
+
+    .admin-panel.active { display: block; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 50;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .status-msg {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--success);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">SE Portfolio</div>
+      <nav class="nav-links">
+        <a href="#projects">ፕሮጀክቶች</a>
+        <a href="#contact">መልዕክት ይላኩ</a>
+        <button id="adminToggleBtn" class="btn-ghost" type="button">Admin (Add/Edit)</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="hero">
+      <h1>ሰላም! የሶፍትዌር ኢንጂነሪንግ ተማሪ ፖርትፎሊዮ</h1>
+      <p>
+        በWeb Development፣ በAI/Machine Learning፣ በJava እና በAndroid ላይ የተሠሩ ፕሮጀክቶችን የምታዩበት ማሳያ።
+        በSupabase Database ስለሚቀመጥ በማንኛውም መሣሪያ በቀላሉ ማከል፣ ማረም እና ማጥፋት ይቻላል።
+      </p>
+    </div>
+
+    <!-- Admin Panel (Visible only when authenticated in Supabase) -->
+    <div id="adminPanel" class="admin-panel">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; margin-bottom:1rem;">
+        <div>
+          <h3 id="formTitle">አዲስ ፕሮጀክት ያክሉ</h3>
+          <small id="adminEmailLabel" style="color:var(--muted);"></small>
+        </div>
+        <button id="logoutBtn" class="btn-ghost" type="button">ውጣ (Logout)</button>
+      </div>
+      <form id="projectForm">
+        <input type="hidden" id="editId" />
+        <input type="text" id="projTitle" placeholder="የፕሮጀክቱ ስም" required />
+        <select id="projCategory">
+          <option value="Web">Web</option>
+          <option value="AI">AI</option>
+          <option value="Java">Java</option>
+          <option value="Android">Android</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="text" id="projTech" placeholder="ቴክኖሎጂዎች (በኮማ ይለዩ፦ HTML, CSS, JS)" required />
+        <input type="url" id="projRepo" placeholder="የGitHub ሊንክ (optional)" />
+        <input type="url" id="projDemo" placeholder="የLive Demo / Video ሊንክ (optional)" />
+        <textarea id="projDesc" placeholder="የፕሮጀክቱ አጭር ማብራሪያ..." required></textarea>
+        <div style="display:flex; gap:0.6rem;">
+          <button type="submit" id="saveProjBtn" class="btn-success">ፕሮጀክት አስቀምጥ</button>
+          <button type="button" id="cancelEditBtn" class="btn-ghost" style="display:none;">ሰርዝ</button>
+        </div>
+        <div id="adminStatus" class="status-msg"></div>
+      </form>
+    </div>
+
+    <section id="projects">
+      <h2>የተሠሩ ፕሮጀክቶች</h2>
+      <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" data-cat="All">ሁሉም</button>
+        <button class="filter-btn" data-cat="Web">Web</button>
+        <button class="filter-btn" data-cat="AI">AI</button>
+        <button class="filter-btn" data-cat="Java">Java</button>
+        <button class="filter-btn" data-cat="Android">Android</button>
+      </div>
+      <div class="grid" id="projectsGrid"></div>
+    </section>
+
+    <section id="contact">
+      <h2>መልዕክት ይላኩልኝ</h2>
+      <form id="contactForm">
+        <input type="text" id="senderName" placeholder="ስምዎ" required />
+        <input type="email" id="senderEmail" placeholder="ኢሜይልዎ" required />
+        <textarea id="senderMessage" placeholder="መልዕክትዎን እዚህ ይጻፉ..." required></textarea>
+        <button type="submit" class="btn-primary">መልዕክት ላክ</button>
+        <div id="contactStatus" class="status-msg"></div>
+      </form>
+    </section>
+  </main>
+
+  <!-- Admin Login Modal -->
+  <div id="loginModal" class="modal-backdrop">
+    <div class="modal">
+      <h3 style="margin-bottom:0.75rem;">Supabase Admin መግቢያ</h3>
+      <p style="color:var(--muted); font-size:0.88rem; margin-bottom:1rem;">
+        በSupabase Authentication የተፈጠረውን የAdmin ኢሜይል እና Password ያስገቡ።
+      </p>
+      <form id="loginForm">
+        <input type="email" id="adminEmail" placeholder="Admin ኢሜይል" required />
+        <input type="password" id="adminPassword" placeholder="የይለፍ ቃል" required />
+        <div style="display:flex; gap:0.6rem; justify-content:flex-end;">
+          <button type="button" id="closeModalBtn" class="btn-ghost">ዝጋ</button>
+          <button type="submit" id="loginSubmitBtn" class="btn-primary">ግባ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // --- 1. Supabase Config (የራስህን Project URL እና anon key አስገባ) ---
+    const SUPABASE_URL = "sb_secret_7LG0uV3jSQlv1cJTIyFpDA_GO1MUQqZ";
+    const SUPABASE_ANON_KEY = "sb_publishable_ySU7Ki3K-9pNZnKfu5rvEg_j3iICZfT";
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // --- 2. Telegram Bot Config (ለጊዜው የተተወ - ዝግጁ ስትሆን ሙላ) ---
+    const BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";
+    const CHAT_ID = "YOUR_CHAT_ID_HERE";
+
+    let projects = [];
+    let currentUser = null;
+    let activeCategory = "All";
+
+    function escapeHtml(str = "") {
+      return String(str).replace(/[&<>"']/g, m => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[m]));
+    }
+
+    function escapeAttr(url = "") {
+      return String(url).trim();
+    }
+
+    function setAdminStatus(msg, isError = false) {
+      const el = document.getElementById("adminStatus");
+      el.style.color = isError ? "#ef4444" : "#22c55e";
+      el.textContent = msg;
+    }
+
+    // --- 3. Load Projects from Supabase ---
+    async function loadProjects() {
+      const grid = document.getElementById("projectsGrid");
+      grid.innerHTML = `<p style="color:var(--muted);">ፕሮጀክቶች በመጫን ላይ ናቸው...</p>`;
+
+      if (SUPABASE_URL.includes("YOUR_") || SUPABASE_ANON_KEY.includes("YOUR_")) {
+        grid.innerHTML = `<p style="color:var(--muted);">እባክዎ መጀመሪያ SUPABASE_URL እና SUPABASE_ANON_KEY በኮዱ ውስጥ ያስገቡ።</p>`;
+        return;
+      }
+
+      const { data, error } = await db
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        grid.innerHTML = `<p style="color:#ef4444;">ዳታ ማንበብ አልተቻለም፦ ${escapeHtml(error.message)}</p>`;
+        return;
+      }
+
+      projects = data || [];
+      renderProjects();
+    }
+
+    function renderProjects() {
+      const grid = document.getElementById("projectsGrid");
+      const filtered = activeCategory === "All"
+        ? projects
+        : projects.filter(p => p.category === activeCategory);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<p style="color:var(--muted);">በዚህ ምድብ የተመዘገበ ፕሮጀክት የለም።</p>`;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => {
+        const techs = Array.isArray(p.tech) ? p.tech : [];
+        return `
+          <article class="card">
+            <div>
+              <span class="badge">${escapeHtml(p.category)}</span>
+              <h3>${escapeHtml(p.title)}</h3>
+              <p>${escapeHtml(p.description)}</p>
+              <div class="tech-list">
+                ${techs.map(t => `<span class="tech-tag">${escapeHtml(t)}</span>`).join("")}
+              </div>
+            </div>
+            <div class="card-actions">
+              ${p.repo_url ? `<a href="${escapeAttr(p.repo_url)}" target="_blank" rel="noopener">GitHub</a>` : ""}
+              ${p.demo_url ? `<a href="${escapeAttr(p.demo_url)}" target="_blank" rel="noopener">Demo</a>` : ""}
+              ${currentUser ? `
+                <button class="btn-ghost" type="button" onclick="startEdit('${p.id}')">Edit</button>
+                <button class="btn-danger" type="button" onclick="deleteProject('${p.id}')">Delete</button>
+              ` : ""}
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    // --- 4. Filter Buttons ---
+    document.getElementById("filterBar").addEventListener("click", (e) => {
+      if (!e.target.matches(".filter-btn")) return;
+      document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+      e.target.classList.add("active");
+      activeCategory = e.target.dataset.cat;
+      renderProjects();
+    });
+
+    // --- 5. Supabase Authentication ---
+    const loginModal = document.getElementById("loginModal");
+    const adminPanel = document.getElementById("adminPanel");
+    const adminToggleBtn = document.getElementById("adminToggleBtn");
+
+    function updateAuthUI() {
+      const emailLabel = document.getElementById("adminEmailLabel");
+      if (currentUser) {
+        adminPanel.classList.add("active");
+        adminToggleBtn.textContent = "Admin Panel";
+        emailLabel.textContent = `ገብተዋል፦ ${currentUser.email}`;
+      } else {
+        adminPanel.classList.remove("active");
+        adminToggleBtn.textContent = "Admin (Add/Edit)";
+        emailLabel.textContent = "";
+        resetForm();
+      }
+      renderProjects();
+    }
+
+    async function initAuth() {
+      if (SUPABASE_URL.includes("YOUR_") || SUPABASE_ANON_KEY.includes("YOUR_")) return;
+      const { data } = await db.auth.getSession();
+      currentUser = data.session?.user || null;
+      updateAuthUI();
+
+      db.auth.onAuthStateChange((_event, session) => {
+        currentUser = session?.user || null;
+        updateAuthUI();
+      });
+    }
+
+    adminToggleBtn.addEventListener("click", () => {
+      if (currentUser) {
+        adminPanel.classList.toggle("active");
+      } else {
+        loginModal.classList.add("open");
+      }
+    });
+
+    document.getElementById("closeModalBtn").addEventListener("click", () => {
+      loginModal.classList.remove("open");
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById("loginSubmitBtn");
+      const email = document.getElementById("adminEmail").value.trim();
+      const password = document.getElementById("adminPassword").value;
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "በመግባት ላይ...";
+
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "ግባ";
+
+      if (error) {
+        alert("መግባት አልተቻለም፦ " + error.message);
+        return;
+      }
+
+      currentUser = data.user;
+      document.getElementById("loginForm").reset();
+      loginModal.classList.remove("open");
+      setAdminStatus("በተሳካ ሁኔታ ገብተዋል።");
+      updateAuthUI();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await db.auth.signOut();
+      currentUser = null;
+      setAdminStatus("");
+      updateAuthUI();
+    });
+
+    // --- 6. Create & Update Project in Supabase ---
+    const projectForm = document.getElementById("projectForm");
+
+    projectForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!currentUser) {
+        alert("መጀመሪያ እንደ Admin ይግቡ።");
+        return;
+      }
+
+      const saveBtn = document.getElementById("saveProjBtn");
+      const editId = document.getElementById("editId").value;
+      const payload = {
+        title: document.getElementById("projTitle").value.trim(),
+        category: document.getElementById("projCategory").value,
+        tech: document.getElementById("projTech").value
+          .split(",")
+          .map(t => t.trim())
+          .filter(Boolean),
+        repo_url: document.getElementById("projRepo").value.trim(),
+        demo_url: document.getElementById("projDemo").value.trim(),
+        description: document.getElementById("projDesc").value.trim()
+      };
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = "በማስቀመጥ ላይ...";
+
+      let error = null;
+      if (editId) {
+        const res = await db.from("projects").update(payload).eq("id", editId);
+        error = res.error;
+      } else {
+        const res = await db.from("projects").insert([payload]);
+        error = res.error;
+      }
+
+      saveBtn.disabled = false;
+      saveBtn.textContent = "ፕሮጀክት አስቀምጥ";
+
+      if (error) {
+        setAdminStatus("ማስቀመጥ አልተቻለም፦ " + error.message, true);
+        return;
+      }
+
+      setAdminStatus(editId ? "ፕሮጀክቱ በተሳካ ሁኔታ ተስተካክሏል።" : "አዲስ ፕሮጀክት ተጨምሯል።");
+      resetForm();
+      await loadProjects();
+    });
+
+    window.startEdit = function(id) {
+      const p = projects.find(item => String(item.id) === String(id));
+      if (!p) return;
+      adminPanel.classList.add("active");
+      document.getElementById("editId").value = p.id;
+      document.getElementById("projTitle").value = p.title || "";
+      document.getElementById("projCategory").value = p.category || "Web";
+      document.getElementById("projTech").value = Array.isArray(p.tech) ? p.tech.join(", ") : "";
+      document.getElementById("projRepo").value = p.repo_url || "";
+      document.getElementById("projDemo").value = p.demo_url || "";
+      document.getElementById("projDesc").value = p.description || "";
+      document.getElementById("formTitle").textContent = "ፕሮጀክት ያስተካክሉ";
+      document.getElementById("cancelEditBtn").style.display = "inline-block";
+      setAdminStatus("");
+      adminPanel.scrollIntoView({ behavior: "smooth" });
+    };
+
+    // --- 7. Delete Project from Supabase ---
+    window.deleteProject = async function(id) {
+      if (!currentUser) return;
+      if (!confirm("ይህን ፕሮጀክት ማጥፋት እርግጠኛ ነዎት?")) return;
+
+      const { error } = await db.from("projects").delete().eq("id", id);
+      if (error) {
+        setAdminStatus("ማጥፋት አልተቻለም፦ " + error.message, true);
+        return;
+      }
+
+      if (document.getElementById("editId").value === String(id)) {
+        resetForm();
+      }
+      setAdminStatus("ፕሮጀክቱ ተሰርዟል።");
+      await loadProjects();
+    };
+
+    function resetForm() {
+      projectForm.reset();
+      document.getElementById("editId").value = "";
+      document.getElementById("formTitle").textContent = "አዲስ ፕሮጀክት ያክሉ";
+      document.getElementById("cancelEditBtn").style.display = "none";
+    }
+
+    document.getElementById("cancelEditBtn").addEventListener("click", () => {
+      resetForm();
+      setAdminStatus("");
+    });
+
+    // --- 8. Contact Form -> Telegram ---
+    document.getElementById("contactForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const statusEl = document.getElementById("contactStatus");
+      const name = document.getElementById("senderName").value.trim();
+      const email = document.getElementById("senderEmail").value.trim();
+      const message = document.getElementById("senderMessage").value.trim();
+
+      if (BOT_TOKEN.includes("YOUR_") || CHAT_ID.includes("YOUR_")) {
+        statusEl.textContent = "መልዕክትዎ ተቀምጧል (የTelegram Bot Token እና Chat ID ገና ስላልተሞሉ በቴሌግራም አልተላከም)።";
+        e.target.reset();
+        return;
+      }
+
+      const text = `📩 አዲስ የፖርትፎሊዮ መልዕክት!\n\n👤 ስም: ${name}\n📧 ኢሜይል: ${email}\n💬 መልዕክት:\n${message}`;
+
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chat_id: CHAT_ID, text })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          statusEl.textContent = "መልዕክትዎ በተሳካ ሁኔታ ወደ ቴሌግራም ተልኳል!";
+          e.target.reset();
+        } else {
+          statusEl.textContent = "መላክ አልተቻለም። የBot Token ወይም Chat ID ያረጋግጡ።";
+        }
+      } catch {
+        statusEl.textContent = "የኔትወርክ ችግር አጋጥሟል።";
+      }
+    });
+
+    initAuth();
+    loadProjects();
+  </script>
+</body>
+</html>
