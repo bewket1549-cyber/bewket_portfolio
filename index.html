@@ -444,7 +444,7 @@
       const email = document.getElementById("senderEmail").value.trim();
       const message = document.getElementById("senderMessage").value.trim();
 
-      if (WEB3FORMS_ACCESS_KEY.includes("78f7e73e-6054-4386-92a1-cb37d96cc08a")) {
+      if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY.includes("YOUR_")) {
         statusEl.style.color = "#ef4444";
         statusEl.textContent = "Please add your Web3Forms access key in WEB3FORMS_ACCESS_KEY to receive emails.";
         return;
