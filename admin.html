@@ -1,1 +1,340 @@
 
+<!DOCTYPE html>
+<html lang="am">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-2: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --border: rgba(148, 163, 184, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 1.5rem;
+    }
+
+    .container { max-width: 950px; margin: 0 auto; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1, h2 { margin-bottom: 0.75rem; }
+    p.muted { color: var(--muted); font-size: 0.9rem; margin-bottom: 1rem; }
+
+    form { display: grid; gap: 0.85rem; max-width: 650px; }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    textarea { min-height: 100px; resize: vertical; }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 0.6rem 1.05rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary { background: var(--accent); color: #0f172a; }
+    .btn-success { background: var(--success); color: #0f172a; }
+    .btn-ghost { background: var(--surface-2); color: var(--text); }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .proj-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .proj-actions { display: flex; gap: 0.5rem; }
+    .status { margin-top: 0.6rem; font-size: 0.9rem; color: var(--success); }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Login Box -->
+    <div id="loginCard" class="card">
+      <h1>Admin Login</h1>
+      <p class="muted">ፕሮጀክቶችን ለማከል፣ ለማስተካከል ወይም ለማጥፋት በSupabase አካውንትዎ ይግቡ።</p>
+      <form id="loginForm">
+        <input type="email" id="emailInput" placeholder="ኢሜይል" required />
+        <input type="password" id="passwordInput" placeholder="የይለፍ ቃል" required />
+        <button type="submit" id="loginBtn" class="btn-primary">ግባ</button>
+      </form>
+      <div id="loginStatus" class="status"></div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboardCard" class="card hidden">
+      <div class="top-bar">
+        <div>
+          <h2>ፕሮጀክት ማስተዳደሪያ</h2>
+          <small id="userEmailText" style="color:var(--muted);"></small>
+        </div>
+        <button type="button" id="logoutBtn" class="btn-ghost">ውጣ</button>
+      </div>
+
+      <form id="projectForm">
+        <input type="hidden" id="editId" />
+        <input type="text" id="titleInput" placeholder="የፕሮጀክቱ ስም" required />
+        <select id="categoryInput">
+          <option value="Web">Web</option>
+          <option value="AI">AI</option>
+          <option value="Java">Java</option>
+          <option value="Android">Android</option>
+          <option value="Other">Other</option>
+        </select>
+        <input type="text" id="techInput" placeholder="ቴክኖሎጂዎች (በኮማ ይለዩ፦ Python, FastAPI)" required />
+        <input type="url" id="repoInput" placeholder="የGitHub ሊንክ (optional)" />
+        <input type="url" id="demoInput" placeholder="የLive Demo ሊንክ (optional)" />
+        <textarea id="descInput" placeholder="የፕሮጀክቱ ማብራሪያ..." required></textarea>
+        <div style="display:flex; gap:0.6rem;">
+          <button type="submit" id="saveBtn" class="btn-success">አስቀምጥ</button>
+          <button type="button" id="cancelBtn" class="btn-ghost hidden">ሰርዝ</button>
+        </div>
+      </form>
+      <div id="dashStatus" class="status"></div>
+
+      <hr style="border:none; border-top:1px solid var(--border); margin:1.5rem 0;" />
+      <h3>የተመዘገቡ ፕሮጀክቶች</h3>
+      <div id="adminList"></div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let items = [];
+    let user = null;
+
+    function escapeHtml(str = "") {
+      return String(str).replace(/[&<>"']/g, m => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[m]));
+    }
+
+    function setDashStatus(msg, isErr = false) {
+      const el = document.getElementById("dashStatus");
+      el.style.color = isErr ? "#ef4444" : "#22c55e";
+      el.textContent = msg;
+    }
+
+    function setLoginStatus(msg, isErr = false) {
+      const el = document.getElementById("loginStatus");
+      el.style.color = isErr ? "#ef4444" : "#22c55e";
+      el.textContent = msg;
+    }
+
+    async function checkAuth() {
+      if (SUPABASE_URL.includes("YOUR_") || SUPABASE_ANON_KEY.includes("YOUR_")) {
+        setLoginStatus("መጀመሪያ SUPABASE_URL እና SUPABASE_ANON_KEY ያስገቡ።", true);
+        return;
+      }
+
+      const { data } = await db.auth.getSession();
+      user = data.session?.user || null;
+      toggleViews();
+
+      db.auth.onAuthStateChange((_event, session) => {
+        user = session?.user || null;
+        toggleViews();
+      });
+    }
+
+    function toggleViews() {
+      const loginCard = document.getElementById("loginCard");
+      const dashCard = document.getElementById("dashboardCard");
+      if (user) {
+        loginCard.classList.add("hidden");
+        dashCard.classList.remove("hidden");
+        document.getElementById("userEmailText").textContent = `Admin: ${user.email}`;
+        loadAdminProjects();
+      } else {
+        loginCard.classList.remove("hidden");
+        dashCard.classList.add("hidden");
+      }
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("loginBtn");
+      const email = document.getElementById("emailInput").value.trim();
+      const password = document.getElementById("passwordInput").value;
+
+      btn.disabled = true;
+      btn.textContent = "በመግባት ላይ...";
+      const { data, error } = await db.auth.signInWithPassword({ email, password });
+      btn.disabled = false;
+      btn.textContent = "ግባ";
+
+      if (error) {
+        setLoginStatus("መግባት አልተቻለም፦ " + error.message, true);
+        return;
+      }
+      user = data.user;
+      document.getElementById("loginForm").reset();
+      setLoginStatus("");
+      toggleViews();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", async () => {
+      await db.auth.signOut();
+      user = null;
+      resetForm();
+      toggleViews();
+    });
+
+    async function loadAdminProjects() {
+      const listEl = document.getElementById("adminList");
+      const { data, error } = await db
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        listEl.innerHTML = `<p style="color:#ef4444;">ማንበብ አልተቻለም፦ ${escapeHtml(error.message)}</p>`;
+        return;
+      }
+
+      items = data || [];
+      if (items.length === 0) {
+        listEl.innerHTML = `<p class="muted" style="margin-top:0.5rem;">ገና ፕሮጀክት አልተመዘገበም።</p>`;
+        return;
+      }
+
+      listEl.innerHTML = items.map(p => `
+        <div class="proj-item">
+          <div>
+            <strong>${escapeHtml(p.title)}</strong>
+            <div style="font-size:0.85rem; color:var(--muted);">${escapeHtml(p.category)}</div>
+          </div>
+          <div class="proj-actions">
+            <button type="button" class="btn-ghost" onclick="editItem('${p.id}')">Edit</button>
+            <button type="button" class="btn-danger" onclick="removeItem('${p.id}')">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    const projectForm = document.getElementById("projectForm");
+    projectForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!user) return;
+
+      const saveBtn = document.getElementById("saveBtn");
+      const editId = document.getElementById("editId").value;
+      const payload = {
+        title: document.getElementById("titleInput").value.trim(),
+        category: document.getElementById("categoryInput").value,
+        tech: document.getElementById("techInput").value.split(",").map(s => s.trim()).filter(Boolean),
+        repo_url: document.getElementById("repoInput").value.trim(),
+        demo_url: document.getElementById("demoInput").value.trim(),
+        description: document.getElementById("descInput").value.trim()
+      };
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = "በማስቀመጥ ላይ...";
+
+      const res = editId
+        ? await db.from("projects").update(payload).eq("id", editId)
+        : await db.from("projects").insert([payload]);
+
+      saveBtn.disabled = false;
+      saveBtn.textContent = "አስቀምጥ";
+
+      if (res.error) {
+        setDashStatus("ማስቀመጥ አልተቻለም፦ " + res.error.message, true);
+        return;
+      }
+
+      setDashStatus(editId ? "ፕሮጀክቱ ተስተካክሏል።" : "ፕሮጀክቱ ተጨምሯል።");
+      resetForm();
+      await loadAdminProjects();
+    });
+
+    window.editItem = function(id) {
+      const p = items.find(x => String(x.id) === String(id));
+      if (!p) return;
+      document.getElementById("editId").value = p.id;
+      document.getElementById("titleInput").value = p.title || "";
+      document.getElementById("categoryInput").value = p.category || "Web";
+      document.getElementById("techInput").value = Array.isArray(p.tech) ? p.tech.join(", ") : "";
+      document.getElementById("repoInput").value = p.repo_url || "";
+      document.getElementById("demoInput").value = p.demo_url || "";
+      document.getElementById("descInput").value = p.description || "";
+      document.getElementById("cancelBtn").classList.remove("hidden");
+      setDashStatus("");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+
+    window.removeItem = async function(id) {
+      if (!user) return;
+      if (!confirm("ይህን ፕሮጀክት ማጥፋት እርግጠኛ ነዎት?")) return;
+      const { error } = await db.from("projects").delete().eq("id", id);
+      if (error) {
+        setDashStatus("ማጥፋት አልተቻለም፦ " + error.message, true);
+        return;
+      }
+      if (document.getElementById("editId").value === String(id)) resetForm();
+      setDashStatus("ፕሮጀክቱ ተሰርዟል።");
+      await loadAdminProjects();
+    };
+
+    function resetForm() {
+      projectForm.reset();
+      document.getElementById("editId").value = "";
+      document.getElementById("cancelBtn").classList.add("hidden");
+    }
+
+    document.getElementById("cancelBtn").addEventListener("click", resetForm);
+
+    checkAuth();
+  </script>
+</body>
+</html>
