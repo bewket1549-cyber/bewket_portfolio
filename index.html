@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="am">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>የሶፍትዌር ኢንጂነሪንግ ፖርትፎሊዮ</title>
+  <title>Software Engineering Portfolio</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -39,7 +39,7 @@
     }
 
     .nav {
-      max-width: 1050px;
+      max-width: 1080px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -57,7 +57,7 @@
       cursor: pointer;
       border: none;
       border-radius: 8px;
-      padding: 0.6rem 1.1rem;
+      padding: 0.65rem 1.15rem;
       font-weight: 600;
       font-size: 0.92rem;
       transition: 0.2s;
@@ -66,19 +66,48 @@
     .btn-primary { background: var(--accent); color: #0f172a; }
     .btn-primary:hover { background: var(--accent-hover); color: #fff; }
 
-    .container { max-width: 1050px; margin: 0 auto; padding: 2rem 1.5rem; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem; }
 
-    .hero { padding: 2.5rem 0 2rem; border-bottom: 1px solid var(--border); }
-    .hero h1 { font-size: 2rem; margin-bottom: 0.75rem; }
-    .hero p { color: var(--muted); max-width: 720px; margin-bottom: 1.25rem; }
+    section { padding: 2.75rem 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
 
-    .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1.25rem 0 1.5rem; }
+    .hero { padding-top: 1.5rem; }
+    .role-tag {
+      display: inline-block;
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--accent);
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.9rem;
+    }
+    .hero h1 { font-size: 2.2rem; margin-bottom: 0.6rem; }
+    .hero .subtitle { font-size: 1.05rem; color: var(--text); margin-bottom: 0.8rem; font-weight: 500; }
+    .hero p.lead { color: var(--muted); max-width: 760px; margin-bottom: 1.25rem; }
+
+    .skills-box { margin-top: 1rem; }
+    .skills-label { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; font-weight: 600; }
+    .pill-list { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .pill {
+      font-size: 0.8rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.28rem 0.65rem;
+      border-radius: 6px;
+      color: #e2e8f0;
+    }
+
+    h2 { font-size: 1.55rem; margin-bottom: 0.6rem; }
+    .section-desc { color: var(--muted); margin-bottom: 1.25rem; font-size: 0.95rem; }
+
+    .filter-bar { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.35rem; }
     .filter-btn { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
     .filter-btn.active { background: var(--accent); color: #0f172a; border-color: var(--accent); }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
       gap: 1.25rem;
     }
 
@@ -86,7 +115,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.25rem;
+      padding: 1.3rem;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -100,14 +129,14 @@
       border-radius: 999px;
       background: rgba(56, 189, 248, 0.15);
       color: var(--accent);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.55rem;
       font-weight: 600;
     }
 
-    .card h3 { font-size: 1.15rem; margin-bottom: 0.4rem; }
+    .card h3 { font-size: 1.18rem; margin-bottom: 0.45rem; }
     .card p { color: var(--muted); font-size: 0.92rem; }
 
-    .tech-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.8rem; }
+    .tech-list { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.85rem; }
     .tech-tag {
       font-size: 0.75rem;
       background: var(--surface-2);
@@ -119,19 +148,45 @@
     .card-links {
       display: flex;
       gap: 1rem;
-      padding-top: 0.75rem;
+      padding-top: 0.8rem;
       border-top: 1px solid var(--border);
     }
 
-    .card-links a { font-size: 0.85rem; color: var(--accent); text-decoration: none; font-weight: 600; }
+    .card-links a { font-size: 0.86rem; color: var(--accent); text-decoration: none; font-weight: 600; }
     .card-links a:hover { text-decoration: underline; }
 
-    section { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
-    section h2 { font-size: 1.45rem; margin-bottom: 0.75rem; }
+    .about-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      color: var(--muted);
+      display: grid;
+      gap: 0.85rem;
+    }
 
-    .info-note { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; }
+    .contact-layout {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1.5rem;
+      align-items: start;
+    }
 
-    form { display: grid; gap: 0.9rem; max-width: 600px; }
+    .contact-info {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.35rem;
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .contact-row { font-size: 0.92rem; color: var(--muted); }
+    .contact-row strong { color: var(--text); display: block; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.03em; }
+    .contact-row a { color: var(--accent); text-decoration: none; }
+    .contact-row a:hover { text-decoration: underline; }
+
+    form { display: grid; gap: 0.9rem; }
     input, textarea {
       width: 100%;
       padding: 0.75rem 0.9rem;
@@ -143,35 +198,51 @@
       font-family: inherit;
     }
 
-    textarea { min-height: 115px; resize: vertical; }
-    .status-msg { margin-top: 0.5rem; font-size: 0.92rem; color: var(--success); }
+    textarea { min-height: 120px; resize: vertical; }
+    .status-msg { margin-top: 0.4rem; font-size: 0.9rem; color: var(--success); }
   </style>
 </head>
 <body>
   <header>
     <div class="nav">
-      <a class="brand" href="#">SE Portfolio</a>
+      <a class="brand" href="#hero">DevPortfolio</a>
       <nav class="nav-links">
-        <a href="#projects">ፕሮጀክቶች</a>
-        <a href="#contact">መልዕክት ይላኩ</a>
+        <a href="#projects">Projects</a>
+        <a href="#about">About Me</a>
+        <a href="#contact">Contact</a>
       </nav>
     </div>
   </header>
 
   <main class="container">
-    <div class="hero">
-      <h1>የሶፍትዌር ኢንጂነሪንግ ፕሮጀክቶች ማሳያ</h1>
-      <p>
-        በWeb Development፣ በAI/Machine Learning፣ በJava እና በAndroid ላይ የተሠሩ ፕሮጀክቶች ስብስብ።
-        ከታች ያሉትን ምድቦች በመምረጥ ፕሮጀክቶችን ማጣራት ወይም በቀጥታ መልዕክት መላክ ይችላሉ።
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <span class="role-tag">Software Engineering Student</span>
+      <h1 id="heroName">Your Name</h1>
+      <p class="subtitle">Full-Stack Developer &bull; Mobile App Developer</p>
+      <p class="lead">
+        Building practical software systems across web applications, AI-driven tools, Java backend workflows, and Android apps with clean architecture and reliable data handling.
       </p>
-    </div>
+      <div class="skills-box">
+        <div class="skills-label">Core Tech Stack &amp; Skills</div>
+        <div class="pill-list">
+          <span class="pill">HTML / CSS / JavaScript</span>
+          <span class="pill">React &amp; FastAPI</span>
+          <span class="pill">Python &amp; Scikit-Learn</span>
+          <span class="pill">Java</span>
+          <span class="pill">Android (XML / Java)</span>
+          <span class="pill">PostgreSQL &amp; Supabase</span>
+          <span class="pill">Git &amp; GitHub</span>
+        </div>
+      </div>
+    </section>
 
+    <!-- Featured Projects -->
     <section id="projects">
-      <h2>የተሠሩ ፕሮጀክቶች</h2>
-      <p id="dataSourceNote" class="info-note">ፕሮጀክቶች በመጫን ላይ ናቸው...</p>
+      <h2>Featured Projects</h2>
+      <p id="dataSourceNote" class="section-desc">Loading projects...</p>
       <div class="filter-bar" id="filterBar">
-        <button class="filter-btn active" type="button" data-cat="All">ሁሉም</button>
+        <button class="filter-btn active" type="button" data-cat="All">All</button>
         <button class="filter-btn" type="button" data-cat="Web">Web</button>
         <button class="filter-btn" type="button" data-cat="AI">AI</button>
         <button class="filter-btn" type="button" data-cat="Java">Java</button>
@@ -180,26 +251,61 @@
       <div class="grid" id="projectsGrid"></div>
     </section>
 
+    <!-- About Me -->
+    <section id="about">
+      <h2>About Me</h2>
+      <div class="about-card">
+        <p>
+          I am a Software Engineering student focused on turning real-world operational and academic problems into clear, maintainable software solutions. My coursework and hands-on builds span web interfaces, machine learning recommendation logic, Java-based assignment workflows, and Android application development.
+        </p>
+        <p>
+          I am actively expanding my skills in full-stack engineering, mobile application development, and secure system design, aiming to grow into a software engineer role where I can ship dependable products and learn from strong engineering teams.
+        </p>
+      </div>
+    </section>
+
+    <!-- Contact & Direct Channels -->
     <section id="contact">
-      <h2>መልዕክት ይላኩልኝ</h2>
-      <form id="contactForm">
-        <input type="text" id="senderName" placeholder="ስምዎ" required />
-        <input type="email" id="senderEmail" placeholder="ኢሜይልዎ" required />
-        <textarea id="senderMessage" placeholder="መልዕክትዎን እዚህ ይጻፉ..." required></textarea>
-        <button type="submit" class="btn-primary">መልዕክት ላክ</button>
-        <div id="contactStatus" class="status-msg"></div>
-      </form>
+      <h2>Contact Me</h2>
+      <p class="section-desc">Send a message directly to my email or reach out through my channels below.</p>
+      <div class="contact-layout">
+        <div class="contact-info">
+          <div class="contact-row">
+            <strong>Email</strong>
+            <a id="emailLink" href="mailto:your.email@example.com">your.email@example.com</a>
+          </div>
+          <div class="contact-row">
+            <strong>Phone</strong>
+            <a id="phoneLink" href="tel:+251900000000">+251 900 000 000</a>
+          </div>
+          <div class="contact-row">
+            <strong>Telegram</strong>
+            <a id="telegramLink" href="https://t.me/yourusername" target="_blank" rel="noopener noreferrer">@yourusername</a>
+          </div>
+          <div class="contact-row">
+            <strong>GitHub</strong>
+            <a id="githubLink" href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer">github.com/yourusername</a>
+          </div>
+        </div>
+
+        <form id="contactForm">
+          <input type="text" id="senderName" name="name" placeholder="Your Name" required />
+          <input type="email" id="senderEmail" name="email" placeholder="Your Email" required />
+          <textarea id="senderMessage" name="message" placeholder="Write your message..." required></textarea>
+          <button type="submit" id="sendBtn" class="btn-primary">Send Email</button>
+          <div id="contactStatus" class="status-msg"></div>
+        </form>
+      </div>
     </section>
   </main>
 
   <script>
-    // --- Supabase Public Config (ብቸኛው የሕዝብ anon key ነው፤ Secret key አይገባም) ---
-    const SUPABASE_URL = "https://vhjtujmfmqvveoscprlf.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_ySU7Ki3K-9pNZnKfu5rvEg_j3iICZfT";
+    // --- 1. Supabase Config (Public anon key only; never put Secret/Service Role key here) ---
+    const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
-    // --- Telegram Bot Config (ለጊዜው የተተወ) ---
-    const BOT_TOKEN = "YOUR_BOT_TOKEN_HERE";
-    const CHAT_ID = "YOUR_CHAT_ID_HERE";
+    // --- 2. Email Form Config via Web3Forms (Get a free access key at web3forms.com) ---
+    const WEB3FORMS_ACCESS_KEY = "YOUR_WEB3FORMS_ACCESS_KEY";
 
     const fallbackProjects = [
       {
@@ -207,26 +313,26 @@
         title: "Personal Budget Tracker",
         category: "Web",
         tech: ["HTML", "CSS", "JavaScript"],
-        description: "ገቢና ወጪን ለመከታተል እና የግል በጀትን በቀላሉ ለማስተዳደር የተሠራ የWeb ፕሮጀክት።",
-        repo_url: "",
+        description: "Solves personal expense tracking and budget visibility by letting users log income and spending categories in a clean web interface.",
+        repo_url: "https://github.com/yourusername/personal-budget-tracker",
         demo_url: ""
       },
       {
         id: "2",
         title: "Smart Phone Recommendations System",
         category: "AI",
-        tech: ["Python", "Machine Learning", "Random Forest"],
-        description: "በተጠቃሚ ፍላጎት እና በዋጋ ደረጃ መሠረት ተስማሚ ስማርት ስልክ የሚመክር AI ሲስተም።",
-        repo_url: "",
+        tech: ["Python", "Scikit-Learn", "Random Forest"],
+        description: "Solves smartphone selection overload by matching user preferences and price tiers to suitable phone recommendations.",
+        repo_url: "https://github.com/yourusername/smartphone-recommendation-system",
         demo_url: ""
       },
       {
         id: "3",
         title: "Online Assignment Submission and Evaluation System",
         category: "Java",
-        tech: ["Advanced Java", "OOP", "Database"],
-        description: "ተማሪዎች የቤት ስራዎችን የሚያስገቡበት እና መምህራን የሚገመግሙበት ስርዓት።",
-        repo_url: "",
+        tech: ["Java", "OOP", "Database"],
+        description: "Solves manual assignment collection and grading tracking by providing a structured submission and evaluation workflow.",
+        repo_url: "https://github.com/yourusername/online-assignment-evaluation",
         demo_url: ""
       }
     ];
@@ -240,9 +346,9 @@
       }[m]));
     }
 
-    function isValidUrl(url = "") {
+    function isValidHttpUrl(url = "") {
       try {
-        const parsed = new URL(url.trim());
+        const parsed = new URL(String(url).trim());
         return parsed.protocol === "https:" || parsed.protocol === "http:";
       } catch {
         return false;
@@ -256,19 +362,19 @@
         : projects.filter(p => p.category === activeCategory);
 
       if (filtered.length === 0) {
-        grid.innerHTML = `<p style="color:var(--muted);">በዚህ ምድብ (${escapeHtml(activeCategory)}) የተመዘገበ ፕሮጀክት የለም።</p>`;
+        grid.innerHTML = `<p style="color:var(--muted);">No projects found in ${escapeHtml(activeCategory)}.</p>`;
         return;
       }
 
       grid.innerHTML = filtered.map(p => {
         const techs = Array.isArray(p.tech) ? p.tech : [];
-        const hasRepo = isValidUrl(p.repo_url);
-        const hasDemo = isValidUrl(p.demo_url);
+        const hasRepo = isValidHttpUrl(p.repo_url);
+        const hasDemo = isValidHttpUrl(p.demo_url);
 
         return `
           <article class="card">
             <div>
-              <span class="badge">${escapeHtml(p.category || "General")}</span>
+              <span class="badge">${escapeHtml(p.category || "Project")}</span>
               <h3>${escapeHtml(p.title)}</h3>
               <p>${escapeHtml(p.description)}</p>
               <div class="tech-list">
@@ -277,8 +383,8 @@
             </div>
             ${(hasRepo || hasDemo) ? `
               <div class="card-links">
-                ${hasRepo ? `<a href="${escapeHtml(p.repo_url.trim())}" target="_blank" rel="noopener noreferrer">GitHub</a>` : ""}
                 ${hasDemo ? `<a href="${escapeHtml(p.demo_url.trim())}" target="_blank" rel="noopener noreferrer">Live Demo</a>` : ""}
+                ${hasRepo ? `<a href="${escapeHtml(p.repo_url.trim())}" target="_blank" rel="noopener noreferrer">GitHub Repo</a>` : ""}
               </div>
             ` : ""}
           </article>
@@ -292,7 +398,7 @@
 
       if (!hasConfig) {
         projects = [...fallbackProjects];
-        note.textContent = "የተመረጡ ፕሮጀክቶች (Supabase ሲገናኝ በቀጥታ ከዳታቤዝ ይዘምናል)።";
+        note.textContent = "Showing selected featured projects (connect Supabase keys to sync dynamically).";
         renderProjects();
         return;
       }
@@ -308,14 +414,14 @@
 
         if (data && data.length > 0) {
           projects = data;
-          note.textContent = "ከSupabase Database የተጫኑ ፕሮጀክቶች።";
+          note.textContent = "Showing projects synced from database.";
         } else {
           projects = [...fallbackProjects];
-          note.textContent = "ዳታቤዙ ባዶ ስለሆነ መነሻ ፕሮጀክቶች እየታዩ ናቸው።";
+          note.textContent = "Database is empty; showing default featured projects.";
         }
-      } catch (err) {
+      } catch {
         projects = [...fallbackProjects];
-        note.textContent = "ከዳታቤዝ ጋር መገናኘት ባለመቻሉ መነሻ ፕሮጀክቶች እየታዩ ናቸው።";
+        note.textContent = "Showing default featured projects.";
       }
 
       renderProjects();
@@ -333,33 +439,50 @@
     document.getElementById("contactForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const statusEl = document.getElementById("contactStatus");
+      const sendBtn = document.getElementById("sendBtn");
       const name = document.getElementById("senderName").value.trim();
       const email = document.getElementById("senderEmail").value.trim();
       const message = document.getElementById("senderMessage").value.trim();
 
-      if (BOT_TOKEN.includes("YOUR_") || CHAT_ID.includes("YOUR_")) {
-        statusEl.textContent = "መልዕክትዎ በተሳካ ሁኔታ ተቀባይነት አግኝቷል (የTelegram Bot ቅንብር ገና ስላልተሞላ በቴሌግራም አልተላከም)።";
-        e.target.reset();
+      if (WEB3FORMS_ACCESS_KEY.includes("YOUR_")) {
+        statusEl.style.color = "#ef4444";
+        statusEl.textContent = "Please add your Web3Forms access key in WEB3FORMS_ACCESS_KEY to receive emails.";
         return;
       }
 
-      const text = `📩 አዲስ የፖርትፎሊዮ መልዕክት!\n\n👤 ስም: ${name}\n📧 ኢሜይል: ${email}\n💬 መልዕክት:\n${message}`;
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Sending...";
+      statusEl.style.color = "#22c55e";
+      statusEl.textContent = "";
 
       try {
-        const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        const response = await fetch("https://api.web3forms.com/submit", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chat_id: CHAT_ID, text })
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_ACCESS_KEY,
+            subject: `New Portfolio Message from ${name}`,
+            from_name: name,
+            email,
+            message
+          })
         });
-        const data = await res.json();
-        if (data.ok) {
-          statusEl.textContent = "መልዕክትዎ በተሳካ ሁኔታ ተልኳል!";
+        const result = await response.json();
+
+        if (result.success) {
+          statusEl.style.color = "#22c55e";
+          statusEl.textContent = "Your message has been sent to my email.";
           e.target.reset();
         } else {
-          statusEl.textContent = "መልዕክት መላክ አልተቻለም። እባክዎ የBot ቅንብር ያረጋግጡ።";
+          statusEl.style.color = "#ef4444";
+          statusEl.textContent = result.message || "Failed to send message.";
         }
       } catch {
-        statusEl.textContent = "የኔትወርክ ችግር አጋጥሟል። እባክዎ እንደገና ይሞክሩ።";
+        statusEl.style.color = "#ef4444";
+        statusEl.textContent = "Network error. Please try again.";
+      } finally {
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Send Email";
       }
     });
 
